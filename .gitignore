@@ -1,0 +1,9 @@
+venv/
+__pycache__/
+*.log
+.pytest_cache/
+record/
+output_videos/
+videos/
+runs/
+torchvision/

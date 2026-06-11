@@ -1,0 +1,419 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Coconut Counter - Industrial</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+
+:root{
+--bg-primary:#0a0e17;
+--bg-secondary:#141b26;
+--bg-tertiary:#1e2937;
+--accent-blue:#3b82f6;
+--accent-green:#22c55e;
+--accent-red:#ef4444;
+--text-primary:#f0f4fa;
+--text-secondary:#94a3b8;
+--border-color:#2d3748;
+}
+
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+}
+
+body{
+background:var(--bg-primary);
+color:var(--text-primary);
+font-family:system-ui;
+min-height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+padding:15px;
+}
+
+.industrial-dashboard{
+width:100%;
+max-width:1400px;
+height:95vh;
+background:var(--bg-secondary);
+border-radius:28px;
+padding:20px;
+display:flex;
+flex-direction:column;
+border:1px solid var(--border-color);
+overflow:hidden;
+}
+
+.dashboard-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:15px;
+}
+
+.title-section h1{
+font-size:26px;
+margin:0;
+}
+
+.status-pill-industrial{
+background:var(--bg-tertiary);
+border-radius:40px;
+padding:10px 20px;
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.led-indicator{
+width:14px;
+height:14px;
+border-radius:50%;
+}
+
+.running{
+background:var(--accent-green);
+box-shadow:0 0 10px var(--accent-green);
+}
+
+.stopped{
+background:var(--accent-red);
+box-shadow:0 0 10px var(--accent-red);
+}
+
+.dashboard-grid{
+display:grid;
+grid-template-columns:1fr 320px;
+gap:20px;
+flex:1;
+min-height:0;
+}
+
+.left-panel{
+display:flex;
+flex-direction:column;
+gap:20px;
+min-height:0;
+}
+
+.stats-row{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:20px;
+}
+
+.stat-card-industrial{
+background:var(--bg-tertiary);
+border-radius:20px;
+padding:18px;
+}
+
+.stat-value-industrial{
+font-size:44px;
+font-weight:bold;
+}
+
+.camera-container-industrial{
+background:var(--bg-tertiary);
+border-radius:20px;
+flex:1;
+display:flex;
+flex-direction:column;
+overflow:hidden;
+min-height:0;
+}
+
+.camera-header{
+padding:10px 15px;
+border-bottom:1px solid var(--border-color);
+}
+
+.camera-feed{
+flex:1;
+background:black;
+display:flex;
+align-items:center;
+justify-content:center;
+overflow:hidden;
+}
+
+.camera-feed img{
+width:100%;
+height:100%;
+object-fit:contain;
+}
+
+.right-panel{
+background:var(--bg-tertiary);
+border-radius:20px;
+padding:20px;
+display:flex;
+flex-direction:column;
+gap:20px;
+overflow-y:auto;
+}
+
+.panel-title{
+font-size:18px;
+font-weight:600;
+margin-bottom:8px;
+}
+
+.control-row{
+display:flex;
+gap:16px;
+justify-content:center;
+}
+
+.industrial-btn{
+width:90px;
+height:90px;
+border-radius:50%;
+border:none;
+background:var(--bg-secondary);
+border:2px solid var(--border-color);
+color:white;
+font-weight:bold;
+cursor:pointer;
+}
+
+.btn-start-industrial{border-color:var(--accent-green);}
+.btn-stop-industrial{border-color:var(--accent-red);}
+.btn-reset-industrial{border-color:var(--accent-blue);}
+
+.control-panel{
+background:var(--bg-secondary);
+padding:16px;
+border-radius:16px;
+}
+
+.industrial-input{
+width:100%;
+padding:10px;
+background:var(--bg-tertiary);
+border:1px solid var(--border-color);
+color:white;
+border-radius:10px;
+}
+
+.apply-btn{
+width:100%;
+margin-top:10px;
+background:var(--accent-blue);
+border:none;
+padding:10px;
+color:white;
+border-radius:10px;
+cursor:pointer;
+}
+
+.industrial-range{
+width:100%;
+}
+
+.range-value{
+background:var(--bg-tertiary);
+padding:4px 10px;
+border-radius:6px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="industrial-dashboard">
+
+<div class="dashboard-header">
+<div class="title-section">
+<h1>COCONUT COUNTER</h1>
+<span style="color:var(--text-secondary)">Industrial Grade</span>
+</div>
+
+<div class="status-pill-industrial">
+<div id="ledIndicator" class="led-indicator stopped"></div>
+<span id="statusText">SYSTEM STOPPED</span>
+</div>
+</div>
+
+<div class="dashboard-grid">
+
+<div class="left-panel">
+
+<div class="stats-row">
+
+<div class="stat-card-industrial">
+<div>Current Count</div>
+<div class="stat-value-industrial">
+<span id="count">0</span> /
+<span id="target">2000</span>
+</div>
+<div id="last">idle</div>
+</div>
+
+<div class="stat-card-industrial">
+<div>Progress</div>
+<div class="stat-value-industrial" id="progress">0%</div>
+</div>
+
+<div class="stat-card-industrial">
+<div>Line Position</div>
+<div class="stat-value-industrial" id="linePosition">0.25</div>
+</div>
+
+</div>
+
+<div class="camera-container-industrial">
+
+<div class="camera-header">
+LIVE CAMERA FEED
+</div>
+
+<div class="camera-feed">
+<img src="/video">
+</div>
+
+</div>
+
+</div>
+
+<div class="right-panel">
+
+<div>
+<div class="panel-title">SYSTEM CONTROLS</div>
+
+<div class="control-row">
+<button class="industrial-btn btn-start-industrial" onclick="cmd('start')">START</button>
+<button class="industrial-btn btn-stop-industrial" onclick="cmd('stop')">STOP</button>
+<button class="industrial-btn btn-reset-industrial" onclick="cmd('reset')">RESET</button>
+</div>
+
+</div>
+
+<div>
+<div class="panel-title">RECORDING</div>
+
+<div class="control-row">
+<button class="industrial-btn btn-start-industrial" onclick="cmd('record_start')">REC</button>
+<button class="industrial-btn btn-stop-industrial" onclick="cmd('record_stop')">STOP</button>
+</div>
+
+<button class="apply-btn" onclick="downloadReport()">DOWNLOAD REPORT</button>
+
+</div>
+
+<div class="control-panel">
+
+<label>Target Count</label>
+<input type="number" id="targetInput" class="industrial-input" value="2000">
+
+<button class="apply-btn" onclick="setTarget()">UPDATE TARGET</button>
+
+</div>
+
+<div class="control-panel">
+
+<label>Line Position</label>
+
+<input type="range" id="lineSlider" class="industrial-range"
+min="0.05" max="0.95" step="0.01" value="0.25"
+oninput="updateLinePreview()">
+
+<span id="lineValue" class="range-value">0.25</span>
+
+<button class="apply-btn" onclick="applyLine()">APPLY</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+async function refresh(){
+
+const r=await fetch('/api/status');
+const j=await r.json();
+
+document.getElementById('count').innerText=j.count;
+document.getElementById('target').innerText=j.target;
+document.getElementById('last').innerText=j.last;
+
+let progress=((j.count/j.target)*100).toFixed(1);
+document.getElementById('progress').innerText=progress+"%";
+
+document.getElementById('linePosition').innerText=j.line_y_ratio.toFixed(2);
+
+let led=document.getElementById('ledIndicator');
+let text=document.getElementById('statusText');
+
+if(j.running){
+led.className="led-indicator running";
+text.innerText="SYSTEM RUNNING";
+}else{
+led.className="led-indicator stopped";
+text.innerText="SYSTEM STOPPED";
+}
+
+}
+
+async function cmd(name){
+await fetch('/api/'+name,{method:'POST'});
+refresh();
+}
+
+async function setTarget(){
+
+let t=parseInt(document.getElementById('targetInput').value);
+
+await fetch('/api/target',{
+method:'POST',
+headers:{'Content-Type':'application/json'},
+body:JSON.stringify({target:t})
+});
+
+refresh();
+}
+
+function updateLinePreview(){
+
+let v=document.getElementById('lineSlider').value;
+document.getElementById('lineValue').innerText=v;
+
+}
+
+async function applyLine(){
+
+let v=parseFloat(document.getElementById('lineSlider').value);
+
+await fetch('/api/line',{
+method:'POST',
+headers:{'Content-Type':'application/json'},
+body:JSON.stringify({line_y_ratio:v})
+});
+
+refresh();
+
+}
+
+function downloadReport(){
+window.location="/download_report";
+}
+
+setInterval(refresh,500);
+refresh();
+
+</script>
+
+</body>
+</html>
