@@ -1,163 +1,204 @@
-
-```markdown
 # 🛠️ EdgeForge-Vision
+
 > **An Open-Source Agile Edge-AI Framework for Accelerated Industrial Inspection, Real-Time Object Telemetry, and Asynchronous HMI Controls on NVIDIA Jetson.**
 
 EdgeForge-Vision is a production-grade, high-speed edge computing vision framework engineered for high-throughput factory automation, predictive sorting pipelines, and localized edge telemetry. Powered natively by the **NVIDIA Jetson Orin Nano**, this framework bridges hardware-accelerated camera ingestion modules directly with physical automation relays (via GPIO) and real-time asynchronous web HMI dashboards.
 
 ---
 
-## 🏗️ Core Architecture Blueprint
+## 📋 Table of Contents
 
-This architecture is strategically built on a **decoupled, multi-threaded pipeline design pattern**. The core framework engine execution loops are completely agnostic to specific deep learning model weights.
+- [Core Architecture](#-core-architecture)
+- [Hardware & Software Stack](#-hardware--software-stack)
+- [Model Weights & Runtime Prerequisites](#-model-weights--runtime-prerequisites)
+- [Industrial Application Use Cases](#-industrial-application-use-cases)
+- [Custom Adaptation Guide](#-custom-adaptation-guide)
+- [Repository Structure](#-repository-structure)
+- [Roadmap](#-engineering-roadmap)
+
+---
+
+## 🏗️ Core Architecture
+
+EdgeForge-Vision is built on a **decoupled, multi-threaded pipeline design pattern**. The core engine execution loops are completely agnostic to specific deep learning model weights, enabling seamless redeployment across diverse industrial contexts.
 
 ```mermaid
 graph TD
     A[Raw Hardware Sensors: CSI / USB V4L2] -->|Buffer Streaming| B[Headless GStreamer Ingestion Core]
     B -->|Thread-Isolated Memory Locking| C[Shared Memory Array Frame Buffer]
     C -->|Asynchronous Read Pipeline| D[NVIDIA TensorRT Inference Engine - FP16]
-    C -->|Asynchronous Stream Matrix| E[Flask Local Web Server HMI Dashboard]
+    C -->|Asynchronous Stream| E[Flask Local Web Server / HMI Dashboard]
     D -->|Telemetry Output Evaluation| F[Jetson GPIO Control Loop: Board Pin 7]
-    F -->|Hardware Signal| G[Physical Relay / Industrial Sirens Interlocking]
-
+    F -->|Hardware Signal| G[Physical Relay / Industrial Siren Interlock]
 ```
 
 ### 1. Hardware Interface Layers
 
-* **Vision Acquisition:** High-speed CSI / Generic USB Webcams streaming directly via internal Linux V4L2 kernel abstraction channels.
-* **Edge Compute Platform:** NVIDIA Jetson Orin Nano Developer Kit utilizing specialized System-on-Module (SoM) shared-memory spaces.
-* **Automation Interlocks:** Low-latency physical alerting devices/relays natively bound to Jetson GPIO configurations (`Board Pin 7`).
+- **Vision Acquisition:** High-speed CSI / USB webcams streaming via the Linux V4L2 kernel abstraction layer.
+- **Edge Compute Platform:** NVIDIA Jetson Orin Nano Developer Kit utilizing SoM shared-memory architecture.
+- **Automation Interlocks:** Low-latency physical relays and alerting devices natively bound to Jetson GPIO (Board Pin 7).
 
 ### 2. Software Concurrency Infrastructure
 
-* **Ingestion Core:** Headless GStreamer script pipeline streaming hardware frame buffers straight into volatile memory structures, entirely bypassing desktop window management systems for maximized throughput.
-* **Inference Pipeline:** Highly optimized NVIDIA TensorRT execution context deploying FP16 half-precision quantization matrices directly into Jetson CUDA cores.
-* **Concurrency Matrix:** Absolute isolation between vision loops and web networking queries utilizing strict synchronization wrappers (`threading.Lock()`) to guarantee zero-race conditions across shared buffers.
-* **HMI Server Node:** Lightweight, asynchronous Flask REST server rendering industrial status over an auto-booting responsive dark-themed dashboard environment.
+- **Ingestion Core:** Headless GStreamer pipeline streaming hardware frame buffers directly into volatile memory, bypassing desktop window management for maximum throughput.
+- **Inference Pipeline:** NVIDIA TensorRT execution context deploying FP16 half-precision quantization directly onto Jetson CUDA cores.
+- **Concurrency Model:** Strict isolation between the vision loop and web networking layer using `threading.Lock()` synchronization wrappers to guarantee zero race conditions across shared buffers.
+- **HMI Server Node:** Lightweight asynchronous Flask REST server rendering industrial status over an auto-booting responsive dark-themed dashboard.
 
 ---
 
-## 🧠 Model Weights & Runtime Pre-requisites Access
+## ⚙️ Hardware & Software Stack
 
-Production-grade deep learning model weights (`.pt`, `.onnx`, `.engine`) and target compiled installation wheels (`.whl` components around 164MB+) are isolated from the repository's main git tree configuration layer to ensure optimal repository scalability and lightning-fast source replication.
-
-* **Asset Workspace Binaries:** You can instantly down-link all validated custom weights targets and the exact Jetson-optimized PyTorch execution binary components natively via the repository's [Releases Workspace / Tag v1.0.0](https://www.google.com/search?q=https://github.com/m7hanan/EdgeForge-Vision/releases/tag/v1.0.0).
-* **Target Workspace Mapping:** Downloaded assets must be mapped directly into your local workspace directory paths exactly as listed below before runtime verification:
-* `models/best.pt` / `models/yolov8n.pt`
-* `models/best.engine` / `models/yolov8n.engine`
-* `models/torch-2.0.0+nv23.05-cp38-cp38-linux_aarch64.whl`
-
-
-
----
-
-## 🏭 Multi-Industrial Application Blueprint (Cross-Domain Adaptability)
-
-Because EdgeForge-Vision decouples hardware ingestion from neural network model parameters, it can be seamlessly redeployed across diverse industrial setups without altering the system's foundational multi-threaded pipeline logic.
-
-| Industry Sector | Primary Telemetry Task | Custom Model Target | Physical Automation Response (GPIO Pin 7) |
-| --- | --- | --- | --- |
-| **Agricultural Automation** | Real-Time Coconut Grade / Defect Counting | `coconut_weights.engine` | Rejects under-sized or damaged husks via pneumatic sorting valves. |
-| **Beverage Packaging** | Assembly Line Bottle Volumetric Filling Control | `bottle_counter.engine` | Diverts unsealed or underfilled containers into safety quarantine bins. |
-| **Pharma Operations** | Blister Pack Defective Pill Capsule Tracking | `pill_anomaly.engine` | Halts delivery conveyors instantly and sounds warning sirens. |
-| **Logistics & Warehousing** | Warehouse Package Parcel Sorting & Classification | `package_type.engine` | Triggers a directional actuator mechanism to slide boxes into correct delivery chutes. |
+| Component | Details |
+|---|---|
+| Edge Platform | NVIDIA Jetson Orin Nano Developer Kit |
+| Camera Input | CSI Camera / USB Webcam (V4L2) |
+| Inference Runtime | NVIDIA TensorRT (FP16) |
+| ML Framework | PyTorch + Ultralytics YOLOv8 |
+| Streaming Backend | GStreamer (headless) |
+| HMI Server | Flask (async) |
+| GPIO Control | Jetson.GPIO (Board Pin 7) |
+| Language | Python 3.8 |
 
 ---
 
-## 🚀 Step-by-Step Custom Industrial Adaptation Operations Guide
+## 📦 Model Weights & Runtime Prerequisites
 
-Follow this explicit systems engineering manual to retrain the underlying model layout and adapt the repository code node from its default state to any target automation context (e.g., swapping a baseline sorting module with a custom factory bottle-counting array).
+Production model weights (`.pt`, `.onnx`, `.engine`) and the Jetson-optimized PyTorch wheel (~164 MB) are excluded from the main git tree to keep the repository lightweight.
 
-### Step 1: Collect & Train Your Custom Weights
+**Download all validated assets from the [Releases page → Tag v1.0.0](../../releases/tag/v1.0.0).**
 
-1. Source and label a domain-specific dataset (e.g., tracking plastic bottles, glass containers, defect parameters) using any annotation ecosystem.
-2. Train a custom YOLO network using your high-end compute cluster workspace environment:
+After downloading, place assets into your workspace at the following paths:
+
+```
+EdgeForge-Vision/
+└── models/
+    ├── best.pt
+    ├── yolov8n.pt
+    ├── best.engine
+    ├── yolov8n.engine
+    └── torch-2.0.0+nv23.05-cp38-cp38-linux_aarch64.whl
+```
+
+---
+
+## 🏭 Industrial Application Use Cases
+
+Because EdgeForge-Vision decouples hardware ingestion from neural network model parameters, it can be redeployed across diverse industrial setups without modifying the core multi-threaded pipeline logic.
+
+| Industry Sector | Telemetry Task | Custom Model Target | GPIO Response (Pin 7) |
+|---|---|---|---|
+| Agricultural Automation | Coconut grade & defect counting | `coconut_weights.engine` | Rejects undersized or damaged husks via pneumatic sorting valves |
+| Beverage Packaging | Bottle volumetric fill-level control | `bottle_counter.engine` | Diverts unsealed or underfilled containers into quarantine bins |
+| Pharma Operations | Blister pack defective pill tracking | `pill_anomaly.engine` | Halts delivery conveyors and triggers warning sirens |
+| Logistics & Warehousing | Package parcel sorting & classification | `package_type.engine` | Activates directional actuators to route boxes into correct chutes |
+
+---
+
+## 🔧 Custom Adaptation Guide
+
+Follow these steps to retrain the model and adapt the framework to any target industrial context.
+
+### Step 1 — Collect & Train Custom Weights
+
+Label a domain-specific dataset using any annotation tool, then train a custom YOLOv8 model:
+
 ```bash
 pip install ultralytics
-yolo task=detect mode=train model=yolov8n.pt data=your_industrial_dataset.yaml epochs=100 imgsz=640
-
+yolo task=detect mode=train model=yolov8n.pt data=your_dataset.yaml epochs=100 imgsz=640
 ```
 
+Extract `best.pt` from the output directory once training completes.
 
-3. Once training pipelines wrap up, extract the newly compiled PyTorch optimization weights binary file named **`best.pt`** from your output directories.
+---
 
-### Step 2: Compile Target Weights to High-Speed TensorRT Engine
+### Step 2 — Export to TensorRT Engine
 
-For production-grade deployment with low-latency execution matrices on the NVIDIA Jetson Orin Nano, you must compile your `.pt` target weights array to a localized hardware-accelerated TensorRT network structure.
-
-Run this command inside your target Jetson system execution framework environment:
+Compile your `.pt` weights to a hardware-accelerated TensorRT binary on the Jetson:
 
 ```bash
-# This triggers quantization down to FP16 half-precision on native CUDA cores
-./venv/bin/python3 -c "from ultralytics import YOLO; model = YOLO('best.pt'); model.export(format='engine', device=0, half=True)"
-
+# Quantizes to FP16 half-precision on native CUDA cores
+./venv/bin/python3 -c "
+from ultralytics import YOLO
+model = YOLO('best.pt')
+model.export(format='engine', device=0, half=True)
+"
 ```
 
-This process converts your baseline model and outputs an ultra-fast hardware-serialized binary asset file named **`best.engine`**.
+This outputs `best.engine` — a serialized, hardware-optimized binary for low-latency inference.
 
-### Step 3: Deploy Weights Assets into Code Workspace Directories
+---
 
-1. Transfer both your newly generated **`best.pt`** and **`best.engine`** assets into your edge target computer machine workspace.
-2. Drop them into the empty placeholder directory structure array layout inside your workspace at:
-`EdgeForge-Vision/models/`
+### Step 3 — Deploy Weights to Workspace
 
-### Step 4: Map Global System Ingestion Parameters
+Transfer `best.pt` and `best.engine` to your edge device and place them in:
 
-Open the core application configuration code module `ui.py` using any standard IDE, and modify the global runtime constants definitions block located at the very top of the script code layer:
+```
+EdgeForge-Vision/models/
+```
+
+---
+
+### Step 4 — Configure Runtime Parameters
+
+Open `ui.py` and update the global configuration block at the top of the file:
 
 ```python
 # ==============================================================================
-# INDUSTRIAL RUNTIME PARAMETERS MATRIX CONFIGURATION
-# ==============================================================================
-# 1. Swap model weights target references dynamically 
-MODEL_PATH = "models/best.engine"  # Set to your newly compiled customized TensorRT binary
-
-# 2. Update Class Name Array Identifiers mapping to match your custom neural network training indices
-CLASS_NAMES = ["Bottle-Full", "Bottle-Empty", "Cap-Defect"]  
-
-# 3. Define target classification bounds trigger levels for GPIO relay alerts
-CRITICAL_ALERT_CLASS = "Cap-Defect" 
+# INDUSTRIAL RUNTIME PARAMETERS — CONFIGURATION
 # ==============================================================================
 
+# 1. Path to your compiled TensorRT binary
+MODEL_PATH = "models/best.engine"
+
+# 2. Class names matching your custom model's training indices
+CLASS_NAMES = ["Bottle-Full", "Bottle-Empty", "Cap-Defect"]
+
+# 3. Target class that triggers the GPIO relay alert
+CRITICAL_ALERT_CLASS = "Cap-Defect"
+
+# ==============================================================================
 ```
 
-### Step 5: Execute and Monitor Core Infrastructure
+---
 
-Initialize hardware tracking execution states over direct machine terminals:
+### Step 5 — Launch & Monitor
+
+Start the framework from the terminal:
 
 ```bash
 sudo ./venv/bin/python3 ui.py
-
 ```
 
-Open any Chromium container targeting localized loops at `http://localhost:5000` to stream real-time factory dashboard data points.
+Open a browser and navigate to `http://localhost:5000` to view the real-time factory HMI dashboard.
 
 ---
 
-## 🛠️ Repository Layout Architecture Map
+## 📁 Repository Structure
 
-```text
+```
 EdgeForge-Vision/
-├── camera/               # Thread-isolated camera ingestion modules (CSI/USB handlers)
-├── models/               # Target local repository workspace for hardware-bound TensorRT (.engine) binaries
-│   └── .gitkeep          # Framework infrastructure safety placeholder token file
-├── static/               # HMI UI stylesheets, custom dark-themed industrial assets
-│   └── .gitkeep          # UI component framework structure placeholder token file
-├── templates/            # HTML5 responsive real-time factory HMI management dashboard screens
-├── ui.py                 # Core Asynchronous Backend Engine & System Thread Lock Coordinator
-├── .gitignore            # System-level binary/OS layout exclusion files mapping rules
-└── README.md             # System Deployment Operations & Custom Adaptation Manual
-
+├── camera/               # Thread-isolated camera ingestion modules (CSI / USB handlers)
+├── models/               # Local workspace for TensorRT (.engine) binaries and weights
+│   └── .gitkeep          # Placeholder — populate with assets from Releases
+├── static/               # HMI UI stylesheets and dark-themed industrial assets
+│   └── .gitkeep          # Placeholder — populated at runtime
+├── templates/            # HTML5 responsive real-time HMI dashboard screens
+├── ui.py                 # Core async backend engine & thread lock coordinator
+├── .gitignore            # Binary / OS-level exclusion rules
+└── README.md             # Deployment & adaptation documentation
 ```
 
 ---
 
-## 📈 Engineering Evolution Roadmap
+## 🗺️ Engineering Roadmap
 
-* [ ] Integrate multi-stream hardware camera orchestration natively scaling across NVIDIA DeepStream SDK blocks.
-* [ ] Embed industrial field bus industrial protocols layers (Modbus/TCP, MQTT brokers, and OPC-UA nodes) for standard PLC networks synchronization.
-* [ ] Expand automated batch reporting workflows creating localized structural compliance tracking PDF log outputs.
+- [ ] Integrate multi-stream camera orchestration via NVIDIA DeepStream SDK
+- [ ] Embed industrial fieldbus protocol layers (Modbus/TCP, MQTT, OPC-UA) for PLC network synchronization
+- [ ] Automated batch reporting with localized PDF compliance log generation
 
-```
+---
 
-```
+## 📄 License
+
+This project is open-source. See [LICENSE](LICENSE) for details.
