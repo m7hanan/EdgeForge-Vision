@@ -12,9 +12,9 @@ EdgeForge-Vision is an open-source, edge-accelerated framework for high-speed in
 
 Built on a **decoupled, multi-threaded architecture**, the core engine is entirely agnostic to specific model weights, enabling seamless redeployment across diverse industrial environments without modifying the pipeline logic.
 
-**Live Validation Prototype:** Successfully deployed as an automated agricultural conveyor-sorting system for industrial coconut counting and batch management. See the HMI Dashboard screenshot <img width="1280" height="960" alt="WhatsApp Image 2026-06-12 at 11 14 48" src="https://github.com/user-attachments/assets/b3501809-90f2-40de-8bc1-116ffc23f692" />
+**Live Validation Prototype:** Successfully deployed as an automated agricultural conveyor-sorting system for industrial coconut counting and batch management. See the HMI Dashboard screenshot 
  for a real deployment view.
- 
+ <img width="1280" height="960" alt="WhatsApp Image 2026-06-12 at 11 14 48" src="https://github.com/user-attachments/assets/b3501809-90f2-40de-8bc1-116ffc23f692" />
 ---
 
 ## 📋 Table of Contents
