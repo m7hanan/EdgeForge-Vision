@@ -12,7 +12,7 @@ EdgeForge-Vision is an open-source, edge-accelerated framework for high-speed in
 
 Built on a **decoupled, multi-threaded architecture**, the core engine is entirely agnostic to specific model weights, enabling seamless redeployment across diverse industrial environments without modifying the pipeline logic.
 
-**Live Validation Prototype:** Successfully deployed as an automated agricultural conveyor-sorting system for industrial coconut counting and batch management.
+**Live Validation Prototype:** Successfully deployed as an automated agricultural conveyor-sorting system for industrial coconut counting and batch management. See the [HMI Dashboard screenshot](#-flask-telemetry-dashboard--rest-api) for a real deployment view.
 
 ---
 
@@ -384,6 +384,16 @@ The HMI layer is a **multi-threaded Flask web application** served at `http://0.
 - **Operational Controls:** Start / Stop inference, Reset batch, adjust line position and target — all without restarting the server.
 - **Recording Controls:** Start / Stop MP4 session recording saved to `record/` with timestamped filenames.
 - **Report Download:** One-click PDF compliance report export at `/download_report`.
+
+---
+
+**Live HMI Dashboard — Industrial Coconut Counter**
+
+![EdgeForge-Vision HMI Dashboard](docs/hmi_dashboard.jpeg)
+
+*Dark-themed industrial dashboard running on the Jetson Orin Nano — showing the live 640×480 MJPEG feed with ROI bounding box (blue) and configurable crossing line (yellow), real-time batch count (0/2000), completion rate, and the control sidebar with START/STOP/RESET, target configuration, and dynamic crossing line position adjustment.*
+
+---
 
 ### REST API Reference
 
