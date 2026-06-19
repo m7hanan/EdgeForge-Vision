@@ -14,6 +14,7 @@ Built on a **decoupled, multi-threaded architecture**, the core engine is entire
 
 **Live Validation Prototype:** Successfully deployed as an automated agricultural conveyor-sorting system for industrial coconut counting and batch management. See the HMI Dashboard screenshot 
  for a real deployment view.
+ [![Watch the video](https://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](https://www.youtube.com/watch?v=o1mMKltcRK8)
  <img width="1280" height="960" alt="WhatsApp Image 2026-06-12 at 11 14 48" src="https://github.com/user-attachments/assets/b3501809-90f2-40de-8bc1-116ffc23f692" />
 ---
 
